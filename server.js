@@ -86,6 +86,33 @@ app.delete('/shopping-list/:id', (req, res) => {
   res.status(204).end();
 });
 
+app.put('/recipes/:id', jsonParser, (req, res) => {
+  const fields = ['id', 'name', 'ingredients'];
+  for(i=0; i<fields.length; i++){
+    const field = fields[i];
+    if(!(field in req.body)){
+      const message = `Please make sure you have ${field} in your request body.`;
+      res.status(400).send(message);
+      console.log(message);
+    }
+  }
+
+  if(req.params.id !== req.body.id){
+    const message = `Please make sure ${req.params.id} and ${req.body.id} are identical`;
+    console.log(message);
+    res.status(400).send(message);
+  }
+  console.log('We have a recipe liftoff.');
+  const updatedItem = Recipes.update({
+    id: req.params.id,
+    name: req.body.name,
+    ingredients: req.body.ingredients
+  });
+
+  console.log('Updated Item');
+  res.status(204).json(updatedItem);
+});
+
 
 app.get('/recipes', (req, res) => {
   res.json(Recipes.get());
